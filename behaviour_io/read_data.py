@@ -1,8 +1,6 @@
 import load_nested_structs as load_ns
-import sys
 from behaviour_io.get_data_funcs import get_settings, convert_raw_events_to_dictionaries
 
-sys.path.append("../") # go to parent
 import glob
 import ntpath
 import numpy as np
@@ -22,6 +20,7 @@ def ReadAnimalData(GeneralDirectory, AnimalID, BpodProtocol, printout=True):
     Stimulations = []  # store the stimulated protocols
     Muscimol = []  # store information about the muscimol
     counter = 0
+
     mat_file_path = f"{GeneralDirectory}{AnimalID}{BpodProtocol}Session Data/*.mat"
     filelist = glob.glob(mat_file_path)
     filelist.sort()
