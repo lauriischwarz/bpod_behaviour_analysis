@@ -59,6 +59,6 @@ DataFrames = [custom_functions.SessionDataToDataFrame(AnimalID, ExperimentDatesP
 AnimalDF = pd.concat(DataFrames, ignore_index=True)
 
 # save the dataframe
-AnimalDF.to_pickle(outputDir + AnimalID + '_dataframe.pkl')
+AnimalDF.to_csv(outputDir + AnimalID + '_dataframe.csv')
 
 print(AnimalDF.keys())

@@ -15,14 +15,14 @@ def merge_DF(AnimalID_list):
     general_directory = '/Users/lauraschwarz/Documents/Bpod_raw/'
 
     for AnimalID in os.listdir(general_directory):
-        df_file_path = general_directory + AnimalID + BpodProtocol + 'Data_Analysis/' + AnimalID + '_dataframe.pkl'
+        df_file_path = general_directory + AnimalID + BpodProtocol + 'Data_Analysis/' + AnimalID + '_dataframe.csv'
         if os.path.exists(df_file_path):
             print('Found data for ' + AnimalID)
 
     data_frames = []
     # Read the dataframes and merge them
     for AnimalID in AnimalID_list:
-        df_file_path = f"{general_directory}{AnimalID}{BpodProtocol}Data_Analysis/{AnimalID}_dataframe.pkl"
+        df_file_path = f"{general_directory}{AnimalID}{BpodProtocol}Data_Analysis/{AnimalID}_dataframe.csv"
         animal_df = pd.read_pickle(df_file_path)
         data_frames.append(animal_df)
     animals_df = pd.concat(data_frames, ignore_index=True)
@@ -32,6 +32,4 @@ def merge_DF(AnimalID_list):
     if not os.path.isdir(output_dir):
         os.mkdir(output_dir)
 
-
     return animals_df
-

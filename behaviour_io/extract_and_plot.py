@@ -1,7 +1,7 @@
 import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
-from behaviour_io.merge_dataframes_of_animals import merge_DF
+from behaviour_io.merge_dataframes import merge_DF
 
 # Select animal to analyze
 AnimalID = 'DRD103'
