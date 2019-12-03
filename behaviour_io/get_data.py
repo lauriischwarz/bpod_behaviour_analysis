@@ -4,7 +4,7 @@ import os
 import sys
 from behaviour_io.read_data import ReadAnimalData
 import custom_functions
-sys.path.append("../") # go to parent
+sys.path.append("../")  # go to parent
 import ntpath
 import pandas as pd
 import warnings
@@ -54,7 +54,7 @@ for idx in idxToRemove:
 
 # get all data into a dataframe
 DataFrames = [custom_functions.SessionDataToDataFrame(AnimalID, ExperimentDatesPretty[i], exp['SessionData'])
-            for i, exp in enumerate(ExperimentData)]
+              for i, exp in enumerate(ExperimentData)]
 
 AnimalDF = pd.concat(DataFrames, ignore_index=True)
 
