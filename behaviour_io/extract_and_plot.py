@@ -1,7 +1,8 @@
 import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
-from behaviour_io.merge_dataframes import merge_DF
+from behaviour_io.constants import ROOT_FOLDER, BPOD_PROTOCOL
+
 
 # Select animal to analyze
 AnimalID = 'DRD103'
@@ -14,7 +15,7 @@ GeneralDirectory = '/Users/lauraschwarz/Documents/Bpod_raw/'
 outputDir = GeneralDirectory + AnimalID + BpodProtocol + 'Data_Analysis/'
 
 # read data like this:
-AnimalDF = pd.read_pickle(outputDir + AnimalID + '_dataframe.pkl')
+AnimalDF = pd.read_csv(outputDir + AnimalID + '_dataframe.csv')
 print(AnimalDF.keys())
 fig, ax = plt.subplots(figsize=(15,5))
 ax.axhline(50, ls='--', alpha=0.4, color='k')
@@ -27,14 +28,18 @@ sns.barplot(x="SessionTime", y='TrialIndex', hue='Protocol', data=AnimalDF)
 
 plt.show()
 
-AnimalID_list = ["D1cre06", "D1cre01", "DRD101", "D1cre02", "D1cre03", "D1cre05", "D1cre04", "DRD103", "DRD102"]
-Animal_group_list = ['D1Caspase', 'D1Caspase', 'D1Caspase', 'D1Caspase', 'D1Caspase', 'D1Caspase', 'CTXBuffer',
-                       'CTXBuffer', 'CTXBuffer']
+bpod_protocol = BPOD_PROTOCOL
+output_dir = f'{ROOT_FOLDER}{bpod_protocol}Data_Analysis/'
+merged_df = pd.read_csv(f"{output_dir}_merged_dataframe.csv")
+sns.lineplot(x='TrialIndex',
+             y='CumulativePerformance',
+             hue='AnimalID',
+             data=merged_df,
+             markers=".",
+             linewidth=0.3,
+             err_style=None)
 
-Animals_merged_DF = merge_DF(AnimalID_list)
-Animals_merged_DF['Injection'] = Animals_merged_DF.apply(merge_DF, axis=1)
-
-print(Animals_merged_DF.AnimalID)
+plt.show()
 #
 #fig, ax = plt.subplots(figsize=(15, 5))
 #ax.axhline(50, ls='--', alpha=0.4, color='k')

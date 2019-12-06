@@ -163,7 +163,7 @@ def BootstrapPerformances(trialsDif, sideSelected, ntimes, prediction_difficulti
     return predictPerFake
 
 
-def SessionDataToDataFrame (AnimalID, SessionID, SessionData):
+def session_to_df (AnimalID, SessionID, SessionData):
     # function to create a dataframe out of the session
     # each trial is an entry on the dataframe
 
@@ -254,7 +254,7 @@ def SessionDataToDataFrame (AnimalID, SessionID, SessionData):
     return DFtoReturn
 
 
-def identifyIdx(datatimes, ntrialsList, ntrials_thr):
+def get_unwanted_idx(datatimes, ntrialsList, ntrials_thr):
     idxlist = []
     for i in (range(len(datatimes))):
         if np.logical_or(datatimes[i] == 'notFound', ntrialsList[i] < ntrials_thr):

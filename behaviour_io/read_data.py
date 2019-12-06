@@ -1,5 +1,6 @@
 import load_nested_structs as load_ns
-from behaviour_io.get_data_funcs import get_settings, convert_raw_events_to_dictionaries
+from behaviour_io.constants import ROOT_FOLDER
+from behaviour_io.get_data import get_settings, convert_raw_events_matlab_structs_to_dictionaries
 
 import glob
 import ntpath
@@ -9,49 +10,35 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def ReadAnimalData(GeneralDirectory, AnimalID, BpodProtocol, printout=True):
-    # Reads all data from one animal and one protocol
+def read_mouse_data_from_bpod(mouse_id, bpod_protocol_name, printout=True):
+    """Reads all data from one animal and one protocol"""
+    experiment_files = []
+    experiment_data = []
+    ntrials_distribution = []
+    protocols = []
+    stimulations = []
+    muscimol = []
 
-    # Initialize return lists
-    ExperimentFiles = []  # to store experiment names
-    ExperimentData = []  # to store the dictionaries
-    ntrialsDistribution = []  # to visualize the distribution of the number of trials
-    Protocols = []  # store the protocols
-    Stimulations = []  # store the stimulated protocols
-    Muscimol = []  # store information about the muscimol
-    counter = 0
-
-    mat_file_path = f"{GeneralDirectory}{AnimalID}{BpodProtocol}Session Data/*.mat"
+    mat_file_path = f"{ROOT_FOLDER}{mouse_id}{bpod_protocol_name}Session Data/*.mat"  # TODO: implement in pathlib
     filelist = glob.glob(mat_file_path)
     filelist.sort()
 
-    for file_path in filelist:
+    for i, file_path in enumerate(filelist):
         data = load_ns.loadmat(file_path)
 
-        if not "nTrials" in data["SessionData"]:
+        if "nTrials" not in data["SessionData"]:
             continue
 
-        if "SessionData" in data:
-            ntrials = data["SessionData"]["nTrials"]
+        muscimol, ntrials, protocol, stimulation = parse_data_settings(i, data, file_path, printout)
 
-        ExperimentFiles.append(file_path)
-
-        parse_trial_settings(Muscimol,
-                             Protocols,
-                             Stimulations,
-                             counter,
-                             data,
-                             file_path,
-                             ntrials,
-                             ntrialsDistribution,
-                             printout)
-
-        # as RawEvents.Trial is a cell array of structs in MATLAB,
-        # we have to loop through the array and convert the structs to dicts
+        ntrials_distribution.append(ntrials)
+        protocols.append(protocol)
+        stimulations.append(stimulation)
+        muscimol.append(muscimol)
 
         trial_raw_events = data["SessionData"]["RawEvents"]["Trial"]
         try:
-            trial_raw_events = convert_raw_events_to_dictionaries(trial_raw_events)
+            trial_raw_events = convert_raw_events_matlab_structs_to_dictionaries(trial_raw_events)
         except Exception as e:
             print(e)
             trial_raw_events = None
@@ -61,47 +48,40 @@ def ReadAnimalData(GeneralDirectory, AnimalID, BpodProtocol, printout=True):
         else:
             data["SessionData"]["RawEvents"]["Trial"] = np.nan
 
-        # Save the data in a list
-        ExperimentData.append(data)
-        counter += 1
+        experiment_data.append(data)
 
-    return (
-        ExperimentFiles,
-        ExperimentData,
-        ntrialsDistribution,
-        Protocols,
-        Stimulations,
-        Muscimol,
-    )
+    return {  # TODO: implement as dictionary from beginning
+            'experiment_files': experiment_files,
+            'experiment_data': experiment_data,
+            'ntrials_distribution': ntrials_distribution,
+            'protocols': protocols,
+            'stimulus': stimulations,
+            'muscimol': muscimol,
+    }
 
 
-def parse_trial_settings(Muscimol, Protocols, Stimulations, counter, data, file_path, ntrials, ntrialsDistribution,
-                         printout):
-    # Parse the settings of the trials
+def parse_data_settings(counter, data, file_path, printout):
+
+    if "SessionData" in data:
+        ntrials = data["SessionData"]["nTrials"]
+
     trial_settings = data["SessionData"]["TrialSettings"]
+
     try:
         for trial_num, trial in enumerate(trial_settings):
             trial_settings[trial_num] = load_ns._todict(trial)
         data["SessionData"]["TrialSettings"] = trial_settings
     except:
         data["SessionData"]["TrialSettings"] = np.nan
+
     protocol = get_settings(trial_settings, "TrainingLevel")
     stimulation = get_settings(trial_settings, "OptoStim")
     muscimol = get_settings(trial_settings, "Muscimol")
 
     if printout:
         print(
-            "{}: {}, {} trials on {}, stim {}, muscimol {}".format(
-                counter,
-                ntpath.basename(file_path),
-                ntrials,
-                protocol,
-                stimulation,
-                muscimol,
-            )
+            f"{counter}: {ntpath.basename(file_path)}, {ntrials} trials on {protocol}, stim {stimulation}, muscimol {muscimol}"
         )
-    ntrialsDistribution.append(ntrials)
-    Protocols.append(protocol)
-    Stimulations.append(stimulation)
-    Muscimol.append(muscimol)
+
+    return muscimol, ntrials, protocol, stimulation
 
