@@ -4,6 +4,7 @@ import pathlib
 
 from behaviour_io.constants import ROOT_FOLDER, BPOD_PROTOCOL
 
+
 def merge_dataframes(dfs):  #issue: append does not append to existing df but only chucks in the current df
     df_all = pd.concat([df for df in dfs], ignore_index=True, sort=True)
     return df_all
