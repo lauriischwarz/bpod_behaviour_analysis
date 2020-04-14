@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 from behaviour_io.constants import BPOD_PROTOCOL
-from behaviour_io.load_data_from_matfile_to_df import loadmat, import_data_to_python, extract_trial_settings, \
+from behaviour_io.extract_data.load_data_from_matfile_to_df import loadmat, import_data_to_python, extract_trial_settings, \
     combine_dictionaries, get_events_and_state, get_list, extract_from_dict
 
 
