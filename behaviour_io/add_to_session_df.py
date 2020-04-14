@@ -3,7 +3,7 @@ import pathlib
 import numpy as np
 import pandas as pd
 
-from behaviour_io.constants import ROOT_FOLDER, BPOD_PROTOCOL
+from behaviour_io.constants import BPOD_PROTOCOL
 from behaviour_io.load_data_from_matfile_to_df import loadmat, import_data_to_python, extract_trial_settings, \
     combine_dictionaries, get_events_and_state, get_list, extract_from_dict
 
@@ -82,7 +82,6 @@ def extract_session(file_path, save=True):
         combine_dictionaries(trial_settings, df_dict)
         n_trials = python_data['nTrials']
         session_timestamp = [str(file_path).split('_')[-2]]*n_trials
-
 
         for k, v in python_data.items():
 
